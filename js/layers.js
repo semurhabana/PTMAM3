@@ -54,7 +54,12 @@ function merge(layer, id, merge, autoMerge=false) {
       setGridData(layer, player[layer].currentMerge, new Decimal(0))
       setGridData(layer, id, new Decimal(data).add(1))
 		if (layer == "p") {
-		  if (hasUpgrade("tok", 14)) player.a.vip = player.a.vip.add(tmp.tok.upgrades[11].calc)
+			if (player.tok.upgrades.includes(14)) {
+			  player.a.vip = player.a.vip.add(tmp.tok.upgrades[14].calc)
+			}
+			if (player.tok.upgrades.includes(24)) {
+			  player.points = player.points.add(tmp.tok.upgrades[24].calc)
+			}
 		  if (player.lev.buyables[11].gte(0)) {
 			if (Math.random() < tmp.lev.buyables[11].effect[0].div(100).toNumber()) {
 			  player.a.vip = player.a.vip.add(tmp.lev.buyables[11].effect[1])
@@ -149,7 +154,7 @@ addLayer("p", {
     startData() { return {
         unlocked: true,
 		    points: new Decimal(0),
-        timeSinceLastMergeable: 60,
+        timeSinceLastMergeable: 30,
         timeSinceLastAMerge: 60,
         merges: new Decimal(0)
     }},
@@ -818,8 +823,8 @@ addLayer("lev", {
     toNextLevel() {
       let effect = new Decimal(5)
       effect = effect.mul(Decimal.pow(2, player[this.layer].levels))
-	  if (player[this.layer].levels.gt(185)) {
-		  effect = effect.sub(Decimal.mul(5, Decimal.pow(2, 185))).tetrate(1.0025).add(Decimal.mul(5, Decimal.pow(2, 185)))
+	  if (player[this.layer].levels.gt(200)) {
+		  effect = effect.sub(Decimal.mul(5, Decimal.pow(2, 200))).tetrate(1.005).add(Decimal.mul(5, Decimal.pow(2, 200)))
 	  }
 	  if (hasUpgrade("tok", 13)) effect = effect.div(tmp.tok.upgrades[13].calc)
 	  if (hasUpgrade("tok", 23)) effect = effect.div(tmp.tok.upgrades[23].calc)
@@ -1151,7 +1156,7 @@ addLayer("tok", {
     color: "#00FFFF",
     requires() {
 		requirement = new Decimal(12)
-		if (player[this.layer].total.gte(0)) requirement = requirement.sub(4)
+		if (player[this.layer].total.gt(0)) requirement = requirement.sub(4)
 		return requirement
 	}, // Can be a function that takes requirement increases into account
     resource: "mergent tokens", // Name of prestige currency
@@ -1233,36 +1238,36 @@ addLayer("tok", {
         11: {
             title: "VIP Gain",
             description() {
-				return "Gain 1 VIP Point every second for each total mergent token.\n\
+				return "Gain 2 VIP Points every second for each total mergent token.\n\
 				Grants +"+format(tmp[this.layer].upgrades[this.id].calc)+" VIP Points per second."
 			},
             cost: new Decimal(1),
             calc() {
-                return player.tok.total
+                return player.tok.total.mul(2)
             },
             unlocked() { return true }, // The upgrade is only visible when this is true
         },
         12: {
             title: "Energy Gain",
             description() {
-				return "Multiplies energy gain by 3x for each total mergent token.\n\
+				return "Multiplies energy gain by 5x for each total mergent token.\n\
 				Grants "+format(tmp[this.layer].upgrades[this.id].calc)+"x energy gain."
 			},
             cost: new Decimal(1),
             calc() {
-                return Decimal.mul(3, player.tok.total).add(1)
+                return Decimal.mul(5, player.tok.total).add(1)
             },
             unlocked() { return true }, // The upgrade is only visible when this is true
         },
         13: {
             title: "Levels Gain",
             description() {
-				return "Reduces the leveling threshold by 40% for each total mergent token.\n\
+				return "Reduces the leveling threshold by 100% for each total mergent token.\n\
 				Leveling is "+format(tmp[this.layer].upgrades[this.id].calc.sub(1).mul(100))+"% faster."
 			},
             cost: new Decimal(1),
             calc() {
-                return Decimal.pow(1.4, player.tok.total)
+                return Decimal.mul(1, player.tok.total).add(1)
             },
             unlocked() { return true }, // The upgrade is only visible when this is true
         },
@@ -1289,13 +1294,13 @@ addLayer("tok", {
         21: {
             title: "VIP Gain II",
             description() {
-				return "Increases VIP Point gain by 5% for each total mergent token.\n\
+				return "Increases VIP Point gain by 10% for each total mergent token.\n\
 				You gain "+format(tmp[this.layer].upgrades[this.id].calc)+"x VIP Points."
 			},
             cost: new Decimal(1),
             canAfford(){return player[this.layer].points.gte(tmp[this.layer].upgrades[this.id].cost) && player[this.layer].upgrades.includes(11)},
             calc() {
-                return Decimal.div(player.tok.total, 25).add(1)
+                return Decimal.div(player.tok.total, 10).add(1)
             },
             unlocked() { return true }, // The upgrade is only visible when this is true
         },
@@ -1315,13 +1320,13 @@ addLayer("tok", {
         23: {
             title: "Levels Gain II",
             description() {
-				return "Reduces the leveling threshold by 0.01% for each merge.\n\
+				return "Reduces the leveling threshold by 0.02% for each merge.\n\
 				Leveling is "+format(tmp[this.layer].upgrades[this.id].calc.sub(1).mul(100))+"% faster."
 			},
             cost: new Decimal(2),
             canAfford(){return player[this.layer].points.gte(tmp[this.layer].upgrades[this.id].cost) && player[this.layer].upgrades.includes(13)},
             calc() {
-                return Decimal.pow(1.0001, player.p.merges)
+                return Decimal.pow(1.0002, player.p.merges)
             },
             unlocked() { return true }, // The upgrade is only visible when this is true
         },

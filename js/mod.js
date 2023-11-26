@@ -13,11 +13,13 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.0.1",
+	name: "Literally nothing v2",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.1</h3><br>
+		- Patched the game.<br>
 	<h3>v0.0</h3><br>
 		- Added things.<br>
 		- Added stuff.`
@@ -122,4 +124,18 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
+	if (oldVersion == "0.0") {
+		if (player.tok.total.gte(1)) {
+			layerDataReset("tok")
+			player.tok.points = player.tok.points.add(1)
+			player.tok.best = player.tok.best.add(1)
+			player.tok.total = player.tok.total.add(1)
+
+		}
+		if (player.lev.levels.gte(17)) {
+			player.lev.levels = new Decimal(0)
+			layer.lev.buyables.respec()
+			player.lev.spent = new Decimal(0)
+		}
+	}
 }
