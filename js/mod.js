@@ -134,7 +134,7 @@ function fixOldSave(oldVersion){
 		}
 		if (player.lev.levels.gte(17)) {
 			player.lev.levels = new Decimal(0)
-			layer.lev.buyables.respec()
+			tmp.lev.buyables.respec()
 			player.lev.spent = new Decimal(0)
 		}
 	}
