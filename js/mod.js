@@ -69,7 +69,7 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = getMergeableWorkBoosts()
+	let gain = getMergeableWorkBoosts().times(928383738287378282746471564634783243743383426687241)
 	return gain
 }
 
